@@ -363,7 +363,7 @@ window.CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.opena
     <div class="lock-ico">🔒</div>
     <h2>Authorised Access</h2>
     <p>Yeh website private hai. Aage badhne ke liye password daalo.</p>
-    <input type="password" id="passInput" placeholder="Password" autocomplete="off" />
+    <input type="text" id="passInput" placeholder="Password" autocomplete="off" />
     <div class="lock-err" id="lockErr"></div>
     <button class="btn btn-primary" id="unlockBtn">Unlock</button>
   </div>
@@ -622,7 +622,8 @@ window.CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.opena
   </div>
   <div class="chat-settings" id="chatSettings">
     <label>AI API Key (aapki apni)</label>
-    <input type="password" id="cfgKey" placeholder="sk-... (sirf aapke browser mein save hoti hai)" />
+    <input type="text" id="cfgKey" placeholder="sk-... (sirf aapke browser mein save hoti hai)" />
+    <button type="button" class="paste-btn" data-for="cfgKey" style="width:auto;background:transparent;border:1px solid var(--border);color:var(--text);font-weight:500;margin:-4px 0 8px">&#128203; Paste</button>
     <label>API URL (OpenAI-compatible)</label>
     <input type="text" id="cfgUrl" value="https://api.openai.com/v1/chat/completions" />
     <label>Model</label>
@@ -996,7 +997,8 @@ body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none
 
   <div class="ap-sec">
     <h4>1) GitHub setting (sirf ek baar)</h4>
-    <input id="apToken" type="password" placeholder="GitHub token (ghp_...)">
+    <input id="apToken" type="text" placeholder="GitHub token (ghp_...)">
+    <button type="button" class="paste-btn" data-for="apToken" style="width:auto;background:transparent;border:1px solid var(--border);color:var(--text);font-weight:500;margin:-4px 0 8px">&#128203; Paste</button>
     <input id="apOwner" placeholder="GitHub username">
     <input id="apRepo" placeholder="repository naam">
     <input id="apBranch" placeholder="branch (main)">
@@ -1138,5 +1140,20 @@ body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none
 })();
 </script>
 
+
+<script>
+/* Paste button - phone ke password-block se bachne ke liye */
+document.querySelectorAll('.paste-btn').forEach(function(btn){
+  btn.addEventListener('click', async function(){
+    try{
+      var t = await navigator.clipboard.readText();
+      var f = document.getElementById(btn.getAttribute('data-for'));
+      if(f){ f.value = t.trim(); f.dispatchEvent(new Event('input',{bubbles:true})); }
+      btn.textContent = '\u2705 Ho gaya';
+    }catch(e){ btn.textContent = '\u26a0\ufe0f Haath se paste karo'; }
+    setTimeout(function(){ btn.textContent = '\U0001F4CB Paste'; }, 1800);
+  });
+});
+</script>
 </body>
 </html>
