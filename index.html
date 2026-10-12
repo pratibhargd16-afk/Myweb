@@ -310,10 +310,11 @@ const DATA = {
     { name:"Member Four", role:"Staff", bio:"Madad karta hai.", photo:"" }
   ],
 
-  testimonials: [
-    { name:"Rahul", text:"Yeh jagah bahut achhi hai. Sab kuch milta hai." },
-    { name:"Priya", text:"Mujhe yahan padhai aur khel dono pasand hai." },
-    { name:"Aman", text:"Teachers bahut acche hain." }
+  favourites: [
+    { ico:"🎬", name:"Movies", desc:"Action aur motivational filmein." },
+    { ico:"🎵", name:"Songs", desc:"Aarambh Hai Prachand aur bhajan." },
+    { ico:"🍛", name:"Food", desc:"Rajma-chawal aur chole-bhature." },
+    { ico:"🏞️", name:"Places", desc:"Pahad aur mandir ghoomna." }
   ],
 
   quotes: [
@@ -371,7 +372,7 @@ const CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.openai
 <!-- NAV -->
 <header>
   <div class="wrap nav">
-    <div class="logo">Ashish<span>.</span></div>
+    <div class="logo"><img src="data:image/jpeg;base64,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" alt="Ashish" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:9px;border:2px solid rgba(255,255,255,.25)">Ashish<span>.</span></div>
     <nav class="nav-links" id="navLinks">
       <a href="#home">Home</a>
       <a href="#about">About</a>
@@ -386,7 +387,7 @@ const CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.openai
           <a href="#thoughts">Thoughts</a>
           <a href="#journey">Journey</a>
           <a href="#team">Team</a>
-          <a href="#testimonials">Reviews</a>
+          <a href="#favourites">Favourites</a>
           <a href="#quotes">Quotes</a>
           <a href="#faq">FAQ</a>
           <a href="#downloads">Downloads</a>
@@ -539,10 +540,10 @@ const CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.openai
   <div class="team" id="teamWrap"></div>
 </div></section>
 
-<!-- TESTIMONIALS -->
-<section id="testimonials"><div class="wrap reveal">
-  <div class="sec-head"><h2>Reviews</h2><p>Log kya kehte hain</p></div>
-  <div class="quotes" id="testiWrap"></div>
+<!-- FAVOURITES -->
+<section id="favourites"><div class="wrap reveal">
+  <div class="sec-head"><h2>Favourite Things</h2><p>Jo mujhe sabse zyada pasand hai</p></div>
+  <div class="cards" id="favWrap"></div>
 </div></section>
 
 <!-- QUOTES -->
@@ -701,9 +702,9 @@ $("#journeyWrap").innerHTML = DATA.journey.map(j =>
 $("#teamWrap").innerHTML = DATA.team.map(m =>
   `<div class="member"><img src="${m.photo || ph(m.name)}" alt="${esc(m.name)}"><h4>${esc(m.name)}</h4><div class="role">${esc(m.role)}</div><p>${esc(m.bio)}</p></div>`).join("");
 
-// testimonials
-$("#testiWrap").innerHTML = DATA.testimonials.map(t =>
-  `<div class="qcard">“${esc(t.text)}”<span class="by">— ${esc(t.name)}</span></div>`).join("");
+// favourites
+$("#favWrap").innerHTML = DATA.favourites.map(x =>
+  `<div class="card"><div class="ico">${x.ico||"⭐"}</div><h4>${esc(x.name)}</h4><p>${esc(x.desc)}</p></div>`).join("");
 
 // quotes
 $("#quotesWrap").innerHTML = DATA.quotes.map(q =>
@@ -920,6 +921,39 @@ $("#chatMic").addEventListener("click", () => {
   rec.onerror = () => $("#chatMic").textContent="🎤";
   rec.start();
 });
+</script>
+
+<style>
+.music-btn{position:fixed;left:20px;bottom:20px;z-index:400;width:52px;height:52px;border-radius:50%;
+ border:1px solid var(--border);background:var(--card);color:var(--text);font-size:22px;cursor:pointer;
+ box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.music-btn:active{transform:scale(.9)}
+.music-btn.on{background:var(--accent,#6c8cff);color:#fff;border-color:transparent}
+</style>
+<div id="ytWrap" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden"></div>
+<button id="musicBtn" class="music-btn" title="Music on/off">&#128263;</button>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+(function(){
+  var YT_ID="x9feF5rtMAc", player=null, playing=false, armed=true;
+  function sync(){ var b=document.getElementById('musicBtn'); if(!b) return;
+    b.textContent = playing ? '🔊' : '🔇'; b.classList.toggle('on', playing); }
+  function play(){ if(player && player.playVideo){ try{ player.playVideo(); }catch(e){} playing=true; sync(); } }
+  function toggle(){ if(!player || !player.playVideo) return;
+    if(playing){ try{ player.pauseVideo(); }catch(e){} playing=false; } else { play(); } sync(); }
+  window.onYouTubeIframeAPIReady=function(){
+    player=new YT.Player('ytWrap',{ height:'1', width:'1', videoId:YT_ID,
+      playerVars:{ autoplay:1, controls:0, loop:1, playlist:YT_ID, playsinline:1, rel:0 },
+      events:{ onReady:function(e){ try{ e.target.setVolume(60); }catch(x){} } } });
+  };
+  function firstGesture(e){
+    if(e && e.target && e.target.closest && e.target.closest('#musicBtn')) return;
+    if(armed){ armed=false; play(); }
+  }
+  document.addEventListener('click', firstGesture);
+  document.addEventListener('keydown', firstGesture);
+  document.getElementById('musicBtn').addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
+})();
 </script>
 </body>
 </html>
