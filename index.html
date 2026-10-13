@@ -336,7 +336,7 @@ window.DATA = {
   ]
 };
 
-window.CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.openai.com/v1/chat/completions", AI_MODEL:"gpt-4o-mini" };
+window.CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", AI_MODEL:"gemini-2.0-flash" };
 
 /* DATA END */
 </script>
@@ -621,13 +621,19 @@ window.CONFIG = { MODE:"public", PASSWORD:"ashish123", AI_URL:"https://api.opena
     <div><button id="chatGear" title="Settings">⚙️</button> <button id="chatClose" title="Band karo">✕</button></div>
   </div>
   <div class="chat-settings" id="chatSettings">
+    <label>AI Provider (free chuno)</label>
+    <select id="cfgProvider">
+      <option value="gemini">Gemini - FREE &#9989;</option>
+      <option value="groq">Groq - FREE &#9989;</option>
+      <option value="openai">OpenAI - paisa lagta hai</option>
+    </select>
     <label>AI API Key (aapki apni)</label>
     <input type="text" id="cfgKey" placeholder="sk-... (sirf aapke browser mein save hoti hai)" />
     <button type="button" class="paste-btn" data-for="cfgKey" style="width:auto;background:transparent;border:1px solid var(--border);color:var(--text);font-weight:500;margin:-4px 0 8px">&#128203; Paste</button>
     <label>API URL (OpenAI-compatible)</label>
-    <input type="text" id="cfgUrl" value="https://api.openai.com/v1/chat/completions" />
+    <input type="text" id="cfgUrl" value="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions" />
     <label>Model</label>
-    <input type="text" id="cfgModel" value="gpt-4o-mini" />
+    <input type="text" id="cfgModel" value="gemini-2.0-flash" />
     <button class="save" id="cfgSave">Save karo</button>
     <div class="chat-note">🔐 Key sirf aapke browser (localStorage) mein rehti hai — code mein kabhi hardcode nahi hoti.</div>
   </div>
@@ -1221,5 +1227,44 @@ document.querySelectorAll('.paste-btn').forEach(function(btn){
   });
 });
 </script>
+
+<style>
+#fx{position:fixed;inset:0;z-index:-2;pointer-events:none}
+.hero-title,.sec-head h2{background:linear-gradient(100deg,#fff,#b9a6ff,#8be9ff,#fff);-webkit-background-clip:text;background-clip:text;
+ background-size:250% 100%;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:250% 0}}
+.stat-card:hover,.card:hover,.member:hover{box-shadow:0 20px 50px rgba(124,92,255,.35)}
+</style>
+<canvas id="fx"></canvas>
+<script>
+(function(){
+  var c=document.getElementById('fx'); if(!c) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ c.style.display='none'; return; }
+  var x=c.getContext('2d'), W,H, pts=[], col=['160,150,255','0,229,198','255,140,210'];
+  function build(){
+    W=c.width=innerWidth; H=c.height=innerHeight;
+    var n = W<700 ? 34 : 64; pts=[];
+    for(var i=0;i<n;i++) pts.push({x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35, r:Math.random()*1.7+.6, k:i%3});
+  }
+  function loop(){
+    x.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){ var p=pts[i];
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+      x.beginPath(); x.arc(p.x,p.y,p.r,0,6.2832); x.fillStyle='rgba('+col[p.k]+',.8)'; x.fill();
+    }
+    for(var i=0;i<pts.length;i++) for(var j=i+1;j<pts.length;j++){
+      var a=pts[i],b=pts[j], dx=a.x-b.x, dy=a.y-b.y, d=dx*dx+dy*dy;
+      if(d<16000){ var o=(1-d/16000)*0.32;
+        x.strokeStyle='rgba(150,140,255,'+o.toFixed(3)+')'; x.lineWidth=1;
+        x.beginPath(); x.moveTo(a.x,a.y); x.lineTo(b.x,b.y); x.stroke(); }
+    }
+    requestAnimationFrame(loop);
+  }
+  build(); loop(); addEventListener('resize', build);
+})();
+</script>
+
 </body>
 </html>
