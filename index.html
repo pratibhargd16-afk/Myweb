@@ -916,14 +916,11 @@ async function askAI(q){
     let model=localStorage.getItem("aiModel")||CONFIG.AI_MODEL;
     let res=await post(model);
     if(!res.ok){
-      try{
-        const base=url.replace(/\/chat\/completions.*$/,"");
-        const lr=await fetch(base+"/models",{headers:{"Authorization":"Bearer "+key}});
-        const lj=await lr.json();
-        const ids=(lj.data||lj.models||[]).map(m=>m.id||m.name||"").filter(Boolean);
-        const alt=ids.find(id=>/flash/i.test(id))||ids.find(id=>/gemini/i.test(id))||ids[0];
-        if(alt&&alt!==model){ model=alt; localStorage.setItem("aiModel",model); res=await post(model); }
-      }catch(e2){}
+      if(/generativelanguage/.test(url)){
+        const cands=["gemini-2.0-flash","gemini-2.5-flash","gemini-flash-latest","gemini-1.5-flash"];
+        for(const c of cands){ if(c===model) continue;
+          const r2=await post(c); if(r2.ok){ res=r2; model=c; localStorage.setItem("aiModel",c); break; } }
+      }
     }
     const data=await res.json().catch(()=>({}));
     const reply=(data&&data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)
@@ -1277,6 +1274,29 @@ document.querySelectorAll('.paste-btn').forEach(function(btn){
     requestAnimationFrame(loop);
   }
   build(); loop(); addEventListener('resize', build);
+})();
+</script>
+
+
+<script>
+/* AI provider dropdown - chunne par URL + model khud bhar jaye */
+(function(){
+  var PROV={
+    gemini:{url:"https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", model:"gemini-2.0-flash"},
+    groq:{url:"https://api.groq.com/openai/v1/chat/completions", model:"llama-3.3-70b-versatile"},
+    openai:{url:"https://api.openai.com/v1/chat/completions", model:"gpt-4o-mini"}
+  };
+  function setP(v){ var p=PROV[v]; if(!p) return;
+    var u=document.getElementById("cfgUrl"), m=document.getElementById("cfgModel");
+    if(u) u.value=p.url; if(m) m.value=p.model; }
+  var sel=document.getElementById("cfgProvider");
+  if(sel){
+    sel.addEventListener("change", function(){ setP(this.value); });
+    var saved=(localStorage.getItem("aiUrl")||"");
+    if(/generativelanguage/.test(saved)) sel.value="gemini";
+    else if(/groq\.com/.test(saved)) sel.value="groq";
+    else if(/openai\.com/.test(saved)) sel.value="openai";
+  }
 })();
 </script>
 
