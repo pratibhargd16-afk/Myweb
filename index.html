@@ -906,16 +906,30 @@ $("#cfgSave").addEventListener("click", () => {
 });
 function addMsg(who,text){ const d=el("div","msg "+who,esc(text)); chatBody.appendChild(d); chatBody.scrollTop=chatBody.scrollHeight; return d; }
 async function askAI(q){
-  const key=localStorage.getItem("aiKey"), url=localStorage.getItem("aiUrl")||CONFIG.AI_URL, model=localStorage.getItem("aiModel")||CONFIG.AI_MODEL;
+  const key=localStorage.getItem("aiKey"), url=localStorage.getItem("aiUrl")||CONFIG.AI_URL;
   if(!key){ addMsg("bot","Mere paas abhi API key nahi hai. ⚙️ kholo aur apni AI API key daalo."); return; }
   const th = addMsg("bot","Soch raha hoon...");
+  const sys="You are a helpful assistant on Ashish's website. Reply in the same language the user writes (Hindi/Hinglish/English). Keep answers short and friendly.";
+  const msgs=[{role:"system",content:sys},{role:"user",content:q}];
+  const post=(m)=>fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:m,messages:msgs})});
   try{
-    const res = await fetch(url,{ method:"POST", headers:{ "Content-Type":"application/json","Authorization":"Bearer "+key },
-      body: JSON.stringify({ model, messages:[ {role:"system",content:"You are a helpful assistant on Ashish's website. Reply in the same language the user writes (Hindi/Hinglish/English). Keep answers short and friendly."}, {role:"user",content:q} ] }) });
-    const data = await res.json();
-    const reply = data?.choices?.[0]?.message?.content || data?.error?.message || "Koi jawab nahi mila.";
-    th.textContent = reply; speak(reply);
-  }catch(e){ th.textContent = "Sorry, connection mein problem aayi."; }
+    let model=localStorage.getItem("aiModel")||CONFIG.AI_MODEL;
+    let res=await post(model);
+    if(!res.ok){
+      try{
+        const base=url.replace(/\/chat\/completions.*$/,"");
+        const lr=await fetch(base+"/models",{headers:{"Authorization":"Bearer "+key}});
+        const lj=await lr.json();
+        const ids=(lj.data||lj.models||[]).map(m=>m.id||m.name||"").filter(Boolean);
+        const alt=ids.find(id=>/flash/i.test(id))||ids.find(id=>/gemini/i.test(id))||ids[0];
+        if(alt&&alt!==model){ model=alt; localStorage.setItem("aiModel",model); res=await post(model); }
+      }catch(e2){}
+    }
+    const data=await res.json().catch(()=>({}));
+    const reply=(data&&data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)
+      ||(data&&data.error&&data.error.message)||("Koi jawab nahi mila (HTTP "+res.status+").");
+    th.textContent=reply; speak(reply);
+  }catch(e){ th.textContent="Error: "+(e&&e.message?e.message:e)+" — internet ya URL check karo."; }
 }
 function sendChat(){ const q=chatInput.value.trim(); if(!q) return; addMsg("user",q); chatInput.value=""; askAI(q); }
 $("#chatSend").addEventListener("click", sendChat);
