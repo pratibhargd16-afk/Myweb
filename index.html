@@ -901,19 +901,23 @@ $("#cfgSave").addEventListener("click", () => {
   localStorage.setItem("aiKey", $("#cfgKey").value.trim());
   localStorage.setItem("aiUrl", $("#cfgUrl").value.trim());
   localStorage.setItem("aiModel", $("#cfgModel").value.trim());
+  { var ps=document.getElementById("cfgProvider"); if(ps) localStorage.setItem("aiProvider", ps.value); }
   refreshAiState(); chatSettings.classList.remove("open");
   addMsg("bot","Settings save ho gayi ✅");
 });
 function addMsg(who,text){ const d=el("div","msg "+who,esc(text)); chatBody.appendChild(d); chatBody.scrollTop=chatBody.scrollHeight; return d; }
 async function askAI(q){
-  const key=localStorage.getItem("aiKey"), url=localStorage.getItem("aiUrl")||CONFIG.AI_URL;
+  const key=localStorage.getItem("aiKey");
+  const prov=localStorage.getItem("aiProvider")||"gemini";
+  const P=(window.AI_PROV&&window.AI_PROV[prov])||{};
+  const url=P.url||localStorage.getItem("aiUrl")||CONFIG.AI_URL;
   if(!key){ addMsg("bot","Mere paas abhi API key nahi hai. ⚙️ kholo aur apni AI API key daalo."); return; }
   const th = addMsg("bot","Soch raha hoon...");
   const sys="You are a helpful assistant on Ashish's website. Reply in the same language the user writes (Hindi/Hinglish/English). Keep answers short and friendly.";
   const msgs=[{role:"system",content:sys},{role:"user",content:q}];
   const post=(m)=>fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:m,messages:msgs})});
   try{
-    let model=localStorage.getItem("aiModel")||CONFIG.AI_MODEL;
+    let model=P.model||localStorage.getItem("aiModel")||CONFIG.AI_MODEL;
     let res=await post(model);
     if(!res.ok){
       if(/generativelanguage/.test(url)){
@@ -1286,12 +1290,13 @@ document.querySelectorAll('.paste-btn').forEach(function(btn){
     groq:{url:"https://api.groq.com/openai/v1/chat/completions", model:"llama-3.3-70b-versatile"},
     openai:{url:"https://api.openai.com/v1/chat/completions", model:"gpt-4o-mini"}
   };
+  window.AI_PROV=PROV;
   function setP(v){ var p=PROV[v]; if(!p) return;
     var u=document.getElementById("cfgUrl"), m=document.getElementById("cfgModel");
     if(u) u.value=p.url; if(m) m.value=p.model; }
   var sel=document.getElementById("cfgProvider");
   if(sel){
-    sel.addEventListener("change", function(){ setP(this.value); });
+    sel.addEventListener("change", function(){ setP(this.value); localStorage.setItem("aiProvider", this.value); });
     var saved=(localStorage.getItem("aiUrl")||"");
     if(/generativelanguage/.test(saved)) sel.value="gemini";
     else if(/groq\.com/.test(saved)) sel.value="groq";
